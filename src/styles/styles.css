@@ -1,0 +1,190 @@
+@import "tailwindcss";
+
+/* App.css */
+
+/* Default CSS variables.
+   These defaults will be overridden when the first instance of each role is generated.
+*/
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+
+  --color-background: #ffffff;
+  --color-text: #000000;
+  --color-border: #cccccc;
+  --color-highlight: #f5f5f5;
+  --color-accent: #ff6600;
+  --color-cta: #ff0000;
+  --color-link: #007bff;
+  --color-success: #28a745;
+  --color-warning: #ffc107;
+  --color-error: #dc3545;
+  --color-info: #17a2b8;
+  --color-disabled: #6c757d;
+  --color-secondary: #6c757d;
+  --color-overlay: rgba(0, 0, 0, 0.5);
+  --color-background-dark: #ffffff;
+  --color-text-dark: #000000;
+  --color-border-dark: #cccccc;
+  --color-highlight-dark: #f5f5f5;
+  --color-accent-dark: #ff6600;
+  --color-cta-dark: #ff0000;
+  --color-link-dark: #007bff;
+  --color-success-dark: #28a745;
+  --color-warning-dark: #ffc107;
+  --color-error-dark: #dc3545;
+  --color-info-dark: #17a2b8;
+  --color-disabled-dark: #6c757d;
+  --color-secondary-dark: #6c757d;
+  --color-overlay-dark: rgba(0, 0, 0, 0.5);
+}
+
+/* Global Styles */
+/* Global Base Styles */
+body {
+  @apply m-0 flex place-items-center font-sans min-w-[320px] min-h-screen;
+  background-color: var(--color-background);
+  color: var(--color-text);
+}
+
+.dark body {
+  background-color: var(--color-background-dark);
+  color: var(--color-text-dark);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--color-text);
+}
+
+.dark h1,
+.dark h2,
+.dark h3,
+.dark h4,
+.dark h5,
+.dark h6 {
+  color: var(--color-text-dark);
+}
+
+
+/* Container with border */
+.container {
+  @apply border p-4 m-4;
+  border-color: var(--color-border);
+}
+
+.dark .container {
+  border-color: var(--color-border-dark);
+}
+
+/* Highlighted sections */
+.highlight {
+  @apply p-4;
+  background-color: var(--color-highlight);
+}
+
+.dark .highlight {
+  background-color: var(--color-highlight-dark);
+}
+
+/* Accent text */
+.accent {
+  color: var(--color-accent);
+}
+
+.dark .accent {
+  color: var(--color-accent-dark);
+}
+
+/* CTA Button */
+.button-cta {
+  @apply border-0 py-3 px-6 cursor-pointer transition-colors duration-300 ease-in-out rounded;
+  background-color: var(--color-cta);
+  color: var(--color-background);
+}
+
+.dark .button-cta {
+  background-color: var(--color-cta-dark);
+  color: var(--color-background-dark);
+}
+
+.button-cta:hover {
+  @apply opacity-90;
+}
+
+/* Alert Messages */
+.alert-success {
+  @apply p-4 rounded;
+  background-color: var(--color-success);
+  color: var(--color-background);
+}
+
+.dark .alert-success {
+  background-color: var(--color-success-dark);
+  color: var(--color-background-dark);
+}
+
+.alert-warning {
+  @apply p-4 rounded;
+  background-color: var(--color-warning);
+  color: var(--color-background);
+}
+
+.dark .alert-warning {
+  background-color: var(--color-warning-dark);
+  color: var(--color-background-dark);
+}
+
+.alert-error {
+  @apply p-4 rounded;
+  background-color: var(--color-error);
+  color: var(--color-background);
+}
+
+.dark .alert-error {
+  background-color: var(--color-error-dark);
+  color: var(--color-background-dark);
+}
+
+.alert-info {
+  @apply p-4 rounded;
+  background-color: var(--color-info);
+  color: var(--color-background);
+}
+
+.dark .alert-info {
+  background-color: var(--color-info-dark);
+  color: var(--color-background-dark);
+}
+
+/* Disabled elements */
+.disabled {
+  @apply pointer-events-none opacity-60;
+  background-color: var(--color-disabled);
+  color: var(--color-secondary);
+}
+
+.dark .disabled {
+  background-color: var(--color-disabled-dark);
+  color: var(--color-secondary-dark);
+}
+
+/* Overlay */
+.overlay {
+  @apply fixed top-0 left-0 w-full h-full flex items-center justify-center;
+  background-color: var(--color-overlay);
+}
+
+.dark .overlay {
+  background-color: var(--color-overlay-dark);
+}
