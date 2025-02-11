@@ -1,4 +1,3 @@
-// src/utils/colorUtils.ts
 export type SchemeType =
     | 'monochromatic'
     | 'analogous'
@@ -250,10 +249,18 @@ export function generateDarkColor(color: string): string {
 /** Generates a high-contrast variant by boosting saturation and adjusting lightness. */
 export function generateHighContrastColor(color: string): string {
     const hsl = hexToHSL(color);
-    hsl.s = Math.min(100, hsl.s + 20);
-    hsl.l = hsl.l < 50 ? 20 : 80;
+    if (hsl.l > 50) {
+        // If the base color is light, return a very dark version.
+        hsl.l = 10;
+        hsl.s = 100;
+    } else {
+        // If the base color is dark, return a very light version.
+        hsl.l = 90;
+        hsl.s = 100;
+    }
     return hslToHex(hsl);
 }
+
 
 /** Generates a colorblind variant based on a selected mode. */
 export function generateColorblindColor(color: string, mode: string): string {

@@ -1,10 +1,9 @@
 import React from 'react';
-import ColorSchemeGenerator from './components/ColorSchemeGenerator';
+import ColorSchemeGenerator from './pages/ColorSchemeGenerator.tsx';
 
 const App: React.FC = () => {
     return (
         <div>
-            <h1>Color Scheme Generator</h1>
             <ColorSchemeGenerator/>
         </div>
     );
