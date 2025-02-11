@@ -1,5 +1,4 @@
 // src/utils/colorUtils.ts
-
 export type SchemeType =
     | 'monochromatic'
     | 'analogous'
@@ -41,6 +40,7 @@ export function hexToHSL(hex: string): HSL {
     const b = parseInt(hex.substring(4, 6), 16) / 255;
     const max = Math.max(r, g, b);
     const min = Math.min(r, g, b);
+    // eslint-disable-next-line prefer-const
     let h = 0, s = 0, l = (max + min) / 2;
     if (max !== min) {
         const d = max - min;
@@ -178,7 +178,7 @@ export function generateColorScheme(baseHex: string, scheme: SchemeType, count: 
 
 /** Adjusts a base color for a given role type and occurrence index. */
 export function adjustColorForRole(color: string, roleType: RoleType, roleIndex: number): string {
-    let hsl = hexToHSL(color);
+    const hsl = hexToHSL(color);
     switch (roleType) {
         case 'Background':
             hsl.l = Math.min(95, 90 - roleIndex * 2);
@@ -242,7 +242,37 @@ export function adjustColorForRole(color: string, roleType: RoleType, roleIndex:
 
 /** Generates a dark variant of the given color by reducing lightness. */
 export function generateDarkColor(color: string): string {
-    let hsl = hexToHSL(color);
+    const hsl = hexToHSL(color);
     hsl.l = Math.max(0, hsl.l - 30);
+    return hslToHex(hsl);
+}
+
+/** Generates a high-contrast variant by boosting saturation and adjusting lightness. */
+export function generateHighContrastColor(color: string): string {
+    const hsl = hexToHSL(color);
+    hsl.s = Math.min(100, hsl.s + 20);
+    hsl.l = hsl.l < 50 ? 20 : 80;
+    return hslToHex(hsl);
+}
+
+/** Generates a colorblind variant based on a selected mode. */
+export function generateColorblindColor(color: string, mode: string): string {
+    const hsl = hexToHSL(color);
+    switch (mode) {
+        case "protanopia":
+            hsl.h = (hsl.h + 15) % 360;
+            break;
+        case "deuteranopia":
+            hsl.h = (hsl.h + 345) % 360;
+            break;
+        case "tritanopia":
+            hsl.h = (hsl.h + 30) % 360;
+            break;
+        case "achromatopsia":
+            hsl.s = 0;
+            break;
+        default:
+            break;
+    }
     return hslToHex(hsl);
 }

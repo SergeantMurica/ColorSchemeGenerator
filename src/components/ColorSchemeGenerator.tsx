@@ -1,6 +1,14 @@
 // src/components/Generators.tsx
 import React, {JSX, useEffect, useState} from 'react';
-import {adjustColorForRole, generateColorScheme, generateDarkColor, RoleType, SchemeType,} from '../utils/colorUtils';
+import {
+    adjustColorForRole,
+    generateColorblindColor,
+    generateColorScheme,
+    generateDarkColor,
+    generateHighContrastColor,
+    RoleType,
+    SchemeType,
+} from '../utils/colorUtils';
 
 interface Role {
     id: number;
@@ -37,9 +45,11 @@ const Generators: React.FC = () => {
     const [roles, setRoles] = useState<Role[]>(defaultRoles);
     const [resultRoles, setResultRoles] = useState<RoleResult[]>([]);
     const [darkMode, setDarkMode] = useState(false);
+    const [highContrast, setHighContrast] = useState(false);
+    const [colorblindMode, setColorblindMode] = useState("none"); // Options: none, protanopia, deuteranopia, tritanopia, achromatopsia
     const [showOverlayExample, setShowOverlayExample] = useState(false);
 
-    // Toggle dark mode class on the document root.
+    // Dark Mode toggle
     useEffect(() => {
         if (darkMode) {
             document.documentElement.classList.add('dark');
@@ -47,6 +57,24 @@ const Generators: React.FC = () => {
             document.documentElement.classList.remove('dark');
         }
     }, [darkMode]);
+
+    // High Contrast toggle
+    useEffect(() => {
+        if (highContrast) {
+            document.documentElement.classList.add('high-contrast');
+        } else {
+            document.documentElement.classList.remove('high-contrast');
+        }
+    }, [highContrast]);
+
+    // Colorblind Mode toggle (if not "none")
+    useEffect(() => {
+        if (colorblindMode !== "none") {
+            document.documentElement.classList.add('colorblind');
+        } else {
+            document.documentElement.classList.remove('colorblind');
+        }
+    }, [colorblindMode]);
 
     const addRole = () => {
         if (roles.length >= 15) return;
@@ -58,7 +86,7 @@ const Generators: React.FC = () => {
         setRoles([...roles, newRole]);
     };
 
-    const updateRole = (id: number, field: keyof Role, value: Role[keyof Role]) => {
+    const updateRole = <T extends Role[keyof Role]>(id: number, field: keyof Role, value: T) => {
         setRoles(roles.map(role => (role.id === id ? {...role, [field]: value} : role)));
     };
 
@@ -70,7 +98,7 @@ const Generators: React.FC = () => {
         e.preventDefault();
         if (roles.length === 0) return;
 
-        // Generate a color for each role.
+        // Generate a base color for each role.
         const baseColors = generateColorScheme(baseColor, scheme, roles.length);
         const typeCounts: { [key in RoleType]?: number } = {};
 
@@ -79,11 +107,14 @@ const Generators: React.FC = () => {
             typeCounts[role.type] = countForType + 1;
             const adjustedColor = adjustColorForRole(baseColors[index], role.type, countForType);
 
-            // Always set both light and dark variants for the first instance.
+            // Set all variants for the first instance of this role type.
             if (countForType === 0) {
                 document.documentElement.style.setProperty(`--color-${role.type.toLowerCase()}`, adjustedColor);
-                const darkVariant = generateDarkColor(adjustedColor);
-                document.documentElement.style.setProperty(`--color-${role.type.toLowerCase()}-dark`, darkVariant);
+                document.documentElement.style.setProperty(`--color-${role.type.toLowerCase()}-dark`, generateDarkColor(adjustedColor));
+                document.documentElement.style.setProperty(`--color-${role.type.toLowerCase()}-hc`, generateHighContrastColor(adjustedColor));
+                if (colorblindMode !== "none") {
+                    document.documentElement.style.setProperty(`--color-${role.type.toLowerCase()}-cb`, generateColorblindColor(adjustedColor, colorblindMode));
+                }
             }
             return {role, color: adjustedColor};
         });
@@ -164,7 +195,7 @@ const Generators: React.FC = () => {
                         <option value="tetradic">Tetradic</option>
                     </select>
                 </div>
-                <div>
+                <div className="space-y-2">
                     <label className="inline-flex items-center">
                         <input
                             type="checkbox"
@@ -173,6 +204,29 @@ const Generators: React.FC = () => {
                             className="mr-2"
                         />
                         Dark Mode
+                    </label>
+                    <label className="inline-flex items-center">
+                        <input
+                            type="checkbox"
+                            checked={highContrast}
+                            onChange={e => setHighContrast(e.target.checked)}
+                            className="mr-2"
+                        />
+                        High Contrast Mode
+                    </label>
+                    <label className="block">
+                        Colorblind Mode:
+                        <select
+                            value={colorblindMode}
+                            onChange={e => setColorblindMode(e.target.value)}
+                            className="border border-[var(--color-border)] p-2 rounded w-full mt-1"
+                        >
+                            <option value="none">None</option>
+                            <option value="protanopia">Protanopia</option>
+                            <option value="deuteranopia">Deuteranopia</option>
+                            <option value="tritanopia">Tritanopia</option>
+                            <option value="achromatopsia">Achromatopsia</option>
+                        </select>
                     </label>
                 </div>
                 <div>
