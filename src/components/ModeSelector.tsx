@@ -1,88 +1,104 @@
-import React from 'react';
+import React from "react";
+import styled from "styled-components";
+import {ColorMode} from "../utils/colorUtils";
 
-interface ModeSelectorProps {
-    darkMode: boolean;
-    setDarkMode: (value: boolean) => void;
-    highContrast: boolean;
-    setHighContrast: (value: boolean) => void;
-    colorblindMode: string;
-    setColorblindMode: (value: string) => void;
-    previewDarkHighContrast: boolean;
-    setPreviewDarkHighContrast: (value: boolean) => void;
-    previewDarkColorblind: boolean;
-    setPreviewDarkColorblind: (value: boolean) => void;
+interface Props {
+    selected: ColorMode;
+    onChange: (mode: ColorMode) => void;
+    isDarkMode: boolean;
 }
 
-const ModeSelector: React.FC<ModeSelectorProps> = ({
-                                                       darkMode,
-                                                       setDarkMode,
-                                                       highContrast,
-                                                       setHighContrast,
-                                                       colorblindMode,
-                                                       setColorblindMode,
-                                                       previewDarkHighContrast,
-                                                       setPreviewDarkHighContrast,
-                                                       previewDarkColorblind,
-                                                       setPreviewDarkColorblind,
-                                                   }) => {
+interface ModeOption {
+    value: ColorMode;
+    label: string;
+    description: string;
+    darkOnly?: boolean;
+    lightOnly?: boolean;
+}
+
+const options: ModeOption[] = [
+    {
+        value: "default",
+        label: "Default",
+        description: "Standard color palette",
+        lightOnly: true
+    },
+    {
+        value: "dark",
+        label: "Dark",
+        description: "Darker color palette",
+        darkOnly: true
+    },
+    {
+        value: "highContrast",
+        label: "High Contrast",
+        description: "Enhanced contrast for accessibility",
+        lightOnly: true
+    },
+    {
+        value: "highContrastDark",
+        label: "High Contrast Dark",
+        description: "Enhanced contrast in dark mode",
+        darkOnly: true
+    }
+];
+
+const ModeSelector: React.FC<Props> = ({selected, onChange, isDarkMode}) => {
+    // Filter options based on current theme
+    const filteredOptions = options.filter(option => {
+        if (isDarkMode && option.lightOnly) return false;
+        return !(!isDarkMode && option.darkOnly);
+
+    });
+
     return (
-        <div className="space-y-2">
-            <label className="inline-flex items-center">
-                <input
-                    type="checkbox"
-                    checked={darkMode}
-                    onChange={(e) => setDarkMode(e.target.checked)}
-                    className="mr-2"
-                />
-                Dark Mode
-            </label>
-            <label className="inline-flex items-center">
-                <input
-                    type="checkbox"
-                    checked={highContrast}
-                    onChange={(e) => setHighContrast(e.target.checked)}
-                    className="mr-2"
-                />
-                High Contrast Mode
-            </label>
-            {highContrast && (
-                <label className="inline-flex items-center">
-                    <input
-                        type="checkbox"
-                        checked={previewDarkHighContrast}
-                        onChange={(e) => setPreviewDarkHighContrast(e.target.checked)}
-                        className="mr-2"
-                    />
-                    Preview Dark High Contrast
-                </label>
-            )}
-            <label className="block">
-                Colorblind Mode:
-                <select
-                    value={colorblindMode}
-                    onChange={(e) => setColorblindMode(e.target.value)}
-                    className="border border-[var(--color-border)] p-2 rounded w-full mt-1"
+        <Container>
+            {filteredOptions.map(option => (
+                <Option
+                    key={option.value}
+                    selected={selected === option.value}
+                    onClick={() => onChange(option.value)}
                 >
-                    <option value="none">None</option>
-                    <option value="protanopia">Protanopia</option>
-                    <option value="deuteranopia">Deuteranopia</option>
-                    <option value="tritanopia">Tritanopia</option>
-                    <option value="achromatopsia">Achromatopsia</option>
-                </select>
-            </label>
-            {colorblindMode !== "none" && (
-                <label className="inline-flex items-center">
-                    <input
-                        type="checkbox"
-                        checked={previewDarkColorblind}
-                        onChange={(e) => setPreviewDarkColorblind(e.target.checked)}
-                        className="mr-2"
-                    />
-                    Preview Dark Colorblind
-                </label>
-            )}
-        </div>
+                    <OptionName>{option.label}</OptionName>
+                    <OptionDescription>{option.description}</OptionDescription>
+                </Option>
+            ))}
+        </Container>
     );
 };
+
+const Container = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+`;
+
+const Option = styled.div<{ selected: boolean }>`
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: ${props => props.selected
+            ? props.theme.surfaces.selection
+            : 'transparent'};
+
+    &:hover {
+        background: ${props => props.selected
+                ? props.theme.surfaces.selection
+                : props.theme.surfaces.hover};
+    }
+`;
+
+const OptionName = styled.div`
+    font-weight: 600;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+    color: ${props => props.theme.text.primary};
+`;
+
+const OptionDescription = styled.div`
+    font-size: 0.75rem;
+    color: ${props => props.theme.text.secondary};
+`;
 
 export default ModeSelector;
