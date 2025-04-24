@@ -10,7 +10,7 @@ interface Props {
 const Header: React.FC<Props> = ({isDarkMode, toggleDarkMode}) => {
     return (
         <HeaderContainer>
-            <Logo>Chromatic</Logo>
+            <Logo>Khroma</Logo>
             <Tagline>Professional Color Scheme Generator</Tagline>
             <Spacer/>
             <ThemeToggle onClick={toggleDarkMode}>

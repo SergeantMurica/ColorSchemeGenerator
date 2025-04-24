@@ -61,7 +61,6 @@ export function ensureMinimumContrast(
 
     // Get luminance of both colors
     const bgLuminance = getLuminance(bgColor);
-    const textLuminance = getLuminance(textColor);
 
     // Determine if we should make the text lighter or darker
     const shouldLighten = bgLuminance < 0.5;

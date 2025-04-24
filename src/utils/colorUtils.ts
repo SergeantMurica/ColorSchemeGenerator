@@ -34,7 +34,20 @@ export type ColorRole =
     | 'border'
     | 'success'
     | 'warning'
-    | 'error';
+    | 'error'
+    | 'neutral'
+    | 'disabled'
+    | 'link'
+    | 'icon'
+    | 'placeholder'
+    | 'text-primary'
+    | 'text-secondary'
+    | 'text-tertiary'
+    | 'text-link'
+    | 'text-link-hover'
+    | 'text-inactive'
+    | 'text-link'
+    | 'text-link-hover';
 
 export interface HSL {
     h: number;
@@ -43,6 +56,7 @@ export interface HSL {
 }
 
 export interface Color {
+    alpha?: number;
     hex: string;
     hsl: HSL;
     rgb: { r: number, g: number, b: number };
@@ -96,56 +110,7 @@ export function hexToHSL(hex: string): HSL {
     return {h, s: s * 100, l: l * 100};
 }
 
-/**
- * Converts an HSL color to a hex string.
- */
-export function hslToHex({h, s, l}: HSL): string {
-    s /= 100;
-    l /= 100;
 
-    const c = (1 - Math.abs(2 * l - 1)) * s;
-    const x = c * (1 - Math.abs((h / 60) % 2 - 1));
-    const m = l - c / 2;
-
-    let r = 0, g = 0, b = 0;
-
-    if (h >= 0 && h < 60) {
-        r = c;
-        g = x;
-        b = 0;
-    } else if (h >= 60 && h < 120) {
-        r = x;
-        g = c;
-        b = 0;
-    } else if (h >= 120 && h < 180) {
-        r = 0;
-        g = c;
-        b = x;
-    } else if (h >= 180 && h < 240) {
-        r = 0;
-        g = x;
-        b = c;
-    } else if (h >= 240 && h < 300) {
-        r = x;
-        g = 0;
-        b = c;
-    } else if (h >= 300 && h < 360) {
-        r = c;
-        g = 0;
-        b = x;
-    }
-
-    r = Math.round((r + m) * 255);
-    g = Math.round((g + m) * 255);
-    b = Math.round((b + m) * 255);
-
-    const toHex = (n: number) => {
-        const hex = n.toString(16);
-        return hex.length === 1 ? '0' + hex : hex;
-    };
-
-    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-}
 
 /**
  * Converts HSL to RGB values
@@ -192,6 +157,21 @@ export function hslToRgb({h, s, l}: HSL): { r: number, g: number, b: number } {
 
     return {r, g, b};
 }
+
+/**
+ * Converts an HSL color to a hex string.
+ */
+export function hslToHex({h, s, l}: HSL): string {
+    const {r, g, b} = hslToRgb({h, s, l});
+
+    const toHex = (n: number) => {
+        const hex = Math.round(n).toString(16);
+        return hex.length === 1 ? '0' + hex : hex;
+    };
+
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
+
 
 /**
  * Gets a descriptive name for a color
@@ -286,7 +266,7 @@ export function generateColorScheme(
     colors = applyColorMode(colors, mode);
 
     // Convert to full color objects with additional properties
-    let colorObjects = colors.map((hsl, index) => {
+    let colorObjects: Color[] = colors.map((hsl, index) => {
         const hex = hslToHex(hsl);
         const rgb = hslToRgb(hsl);
 
@@ -295,7 +275,7 @@ export function generateColorScheme(
             hsl,
             rgb,
             name: getColorName(hsl),
-            role: getColorRole(index, count),
+            role: getColorRole(index),
             isAccessible: true, // Will be updated when we check contrast
             contrastRatio: 1 // Will be updated when we check contrast
         };
@@ -336,7 +316,7 @@ function rgbToHex({r, g, b}: { r: number, g: number, b: number }): string {
 /**
  * Assign roles to colors based on their position in the palette
  */
-function getColorRole(index: number, totalCount: number): ColorRole {
+function getColorRole(index: number): ColorRole {
     const commonRoles: ColorRole[] = [
         'primary',
         'secondary',
@@ -369,15 +349,7 @@ function getColorRole(index: number, totalCount: number): ColorRole {
 /**
  * Check color contrast and ensure accessibility
  */
-function ensureColorContrast(colors: Color[], mode: ColorMode): {
-    hex: string;
-    hsl: HSL;
-    rgb: { r: number; g: number; b: number; };
-    name: string;
-    role: ColorRole;
-    isAccessible: boolean;
-    contrastRatio: number;
-}[] {
+function ensureColorContrast(colors: Color[], mode: ColorMode): Color[] {
     // Get background and text colors
     const bgIndex = colors.findIndex(c => c.role === 'background');
     const textIndex = colors.findIndex(c => c.role === 'text');
