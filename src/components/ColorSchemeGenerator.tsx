@@ -34,6 +34,7 @@ const ColorSchemeGenerator: React.FC<Props> = ({isDarkMode}) => {
             colorBlindness
         );
         setColors(generatedColors);
+
     }, [baseColor, scheme, colorCount, colorMode, colorBlindness, isDarkMode]);
 
     // Update color mode when dark mode changes
@@ -42,8 +43,11 @@ const ColorSchemeGenerator: React.FC<Props> = ({isDarkMode}) => {
             (colorMode.includes("highContrast") ? "highContrastDark" : "dark") :
             (colorMode.includes("highContrast") ? "highContrast" : "default")
         );
-    }, [isDarkMode]);
+    }, [colorMode, isDarkMode]);
 
+
+
+    // Render different content based on current step (for mobile)
     return (
         <Container>
             <ControlPanel>
@@ -62,7 +66,6 @@ const ColorSchemeGenerator: React.FC<Props> = ({isDarkMode}) => {
                         onChange={setScheme}
                     />
                 </Section>
-
                 <Section>
                     <SectionTitle>Number of Colors</SectionTitle>
                     <RangeInput
@@ -115,7 +118,7 @@ const ColorSchemeGenerator: React.FC<Props> = ({isDarkMode}) => {
                     <SectionTitle>Preview</SectionTitle>
                     <PreviewContainer colors={colors}>
                         <PreviewHeader>
-                            <PreviewLogo>ArtDeco</PreviewLogo>
+                            <PreviewLogo>Khroma</PreviewLogo>
                             <PreviewNav>
                                 <PreviewNavItem>Home</PreviewNavItem>
                                 <PreviewNavItem>Gallery</PreviewNavItem>
@@ -133,7 +136,6 @@ const ColorSchemeGenerator: React.FC<Props> = ({isDarkMode}) => {
                     </PreviewContainer>
                 </ApplicationPreview>
             </PreviewSection>
-
             {showExport && (
                 <ExportPanel
                     colors={colors}
@@ -289,6 +291,7 @@ const PreviewNav = styled.div`
 const PreviewNavItem = styled.div`
     cursor: pointer;
     position: relative;
+    color: ${props => props.theme.text.link};
 
     &:after {
         content: '';
@@ -318,6 +321,7 @@ const PreviewHeading = styled.h2`
     font-family: 'Playfair Display', serif;
     font-size: 2.5rem;
     margin-bottom: 1rem;
+    color: ${props => props.theme.text.primary};
 
     @media ${breakpoints.mobile} {
         font-size: 2rem;
@@ -329,6 +333,7 @@ const PreviewText = styled.p`
     line-height: 1.6;
     max-width: 600px;
     margin: 0 auto 2rem;
+    color: ${props => props.theme.text.secondary};
 
     @media ${breakpoints.mobile} {
         font-size: 1rem;
@@ -337,7 +342,7 @@ const PreviewText = styled.p`
 
 const PreviewButton = styled.button`
     background: ${props => props.theme.accent};
-    color: white;
+    color: ${props => props.theme.text.primary};
     border: none;
     padding: 0.75rem 2rem;
     border-radius: 30px;
